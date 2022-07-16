@@ -1,3 +1,5 @@
 const radijs = require("./index.js");
 
-console.log(radijs.session("aaa"));
+(async() => {
+  console.log(await radijs.get_authtoken());
+})();
