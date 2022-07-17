@@ -1,9 +1,20 @@
+// general settings
 const axios = require('axios').default;
+
+// xml parser settings 
+const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
+const options = {
+	    ignoreAttributes: false,
+	    format: true,
+};
+
+const parser = new XMLParser(options);
 
 (function(module) {
     'use strict';
 
     module.exports.get_authtoken = get_authtoken;
+    module.exports.get_bangumi_uri = get_bangumi_uri;
 
     async function get_authtoken() {
 	// Define authorize key value (from https://radiko.jp/apps/js/playerCommon.js)
@@ -24,5 +35,11 @@ const axios = require('axios').default;
 	await axios.get("https://radiko.jp/v2/api/auth2",{"headers":{ "X-Radiko-Device": "pc", "X-Radiko-User": "dummy_user", "X-Radiko-AuthToken": authtoken, "X-Radiko-PartialKey": Buffer.from(partialkey).toString('base64')}});
         // 上記が特に失敗しないなら authtoken を 返す
         return authtoken
+    };
+
+    async function get_bangumi_uri(stationId) {
+	var bangumi_response = await axios.get(`https://radiko.jp/v2/station/stream_smh_multi/${stationId}.xml`);
+        var aaa = parser.parse(bangumi_response.data);
+	return aaa.urls.url[0].playlist_create_url;
     };
 })(module);
