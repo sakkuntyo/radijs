@@ -15,6 +15,7 @@ const parser = new XMLParser(options);
 
     module.exports.get_authtoken = get_authtoken;
     module.exports.get_bangumi_uri = get_bangumi_uri;
+    module.exports.get_station_id_list = get_station_id_list;
 
     async function get_authtoken() {
 	// Define authorize key value (from https://radiko.jp/apps/js/playerCommon.js)
@@ -41,5 +42,19 @@ const parser = new XMLParser(options);
 	var bangumi_response = await axios.get(`https://radiko.jp/v2/station/stream_smh_multi/${stationId}.xml`);
         var aaa = parser.parse(bangumi_response.data);
 	return aaa.urls.url[0].playlist_create_url;
+    };
+
+    async function get_station_id_list() {
+	var stationlist_response = await axios.get("https://radiko.jp/v3/station/region/full.xml");
+        var stationlist_response_xmlparse = parser.parse(stationlist_response.data);
+	var stationlist = [];
+	stationlist_response_xmlparse.region.stations.forEach(nested => {
+            nested.station.forEach(nested => {
+                stationlist.push(nested.id);
+	    })
+	});
+        stationlist = Array.from(new Set(stationlist));
+        console.log(stationlist)
+        return stationlist;
     };
 })(module);
