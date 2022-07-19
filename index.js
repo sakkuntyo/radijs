@@ -1,5 +1,6 @@
 // general settings
 const axios = require('axios').default;
+const fs   = require('fs');
 
 // xml parser settings 
 const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
@@ -7,8 +8,10 @@ const options = {
 	    ignoreAttributes: false,
 	    format: true,
 };
-
 const parser = new XMLParser(options);
+
+// m3u8 parser settings
+const m3u8 = require('m3u8');
 
 (function(module) {
     'use strict';
@@ -16,6 +19,7 @@ const parser = new XMLParser(options);
     module.exports.get_authtoken = get_authtoken;
     module.exports.get_bangumi_uri = get_bangumi_uri;
     module.exports.get_station_id_list = get_station_id_list;
+    module.exports.get_m3u8_info = get_m3u8_info;
 
     async function get_authtoken() {
 	// Define authorize key value (from https://radiko.jp/apps/js/playerCommon.js)
@@ -57,4 +61,25 @@ const parser = new XMLParser(options);
         console.log(stationlist)
         return stationlist;
     };
+    
+    async function get_m3u8_info(path) {
+        return new Promise((resolve, reject) => {
+          var parser = m3u8.createStream();
+          var file   = fs.createReadStream(path);
+          file.pipe(parser);
+	  var urls = []
+
+          parser.on('item', function(item) {
+              // emits PlaylistItem, MediaItem, StreamItem, and IframeStreamItem
+              //console.log("item")
+              urls.push(item.properties.uri);
+          });
+          parser.on('m3u', function(m3u) {
+	      
+          });
+          parser.on('end', function() {
+	      resolve(urls);
+          });
+        });
+    }
 })(module);
