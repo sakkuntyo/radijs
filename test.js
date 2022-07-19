@@ -57,5 +57,16 @@ const child = require('child_process');
       });
     });
   });
+
+  // ffmpeg結合
+  await new Promise((resolve, reject) => {
+    child.exec(`cd "${dirName}";find ./*.aac | sed 's/^/file /g' | sort > concatfiles.txt;ffmpeg -f concat -safe 0 -i "concatfiles.txt" "./output.mp3"`, (error, stdout, stdin) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(stdout);
+      }
+    });
+  });
   fs.rmSync(`${dirName}`,{ recursive: true, force: true });
 })();
