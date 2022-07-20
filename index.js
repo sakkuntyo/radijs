@@ -22,6 +22,7 @@ const m3u8 = require('m3u8');
     module.exports.get_station_id_list = get_station_id_list;
     module.exports.get_m3u8_file = get_m3u8_file;
     module.exports.get_m3u8_info = get_m3u8_info;
+    module.exports.download_mp3_file = download_mp3_file;
 
     async function get_authtoken() {
 	// Define authorize key value (from https://radiko.jp/apps/js/playerCommon.js)
@@ -85,15 +86,41 @@ const m3u8 = require('m3u8');
         });
     }
     
-    async function get_m3u8_file(url, authToken, filePath) {
+    async function get_m3u8_file(url, authToken, outputFilepath) {
         return new Promise(async (resolve, reject) => {
-            child.exec(`wget "${url}" --header="X-Radiko-Authtoken: ${authToken}" -O "${filePath}";sync`,
+            child.exec(`wget "${url}" --header="X-Radiko-Authtoken: ${authToken}" -O "${outputFilepath}";sync`,
               (error, stdout, stdin) => {
               if (error) {
                 reject(error);
               } else {
                 resolve(stdout); 
               }
+            });
+        });
+    }
+
+    async function download_mp3_file(chunkm3u8filepath, authToken, outputDir) {
+        chunklisturls = await get_m3u8_info(`${chunkm3u8filepath}`);
+        await new Promise((resolve, reject) => {
+          chunklisturls.forEach(async function(element, index, array){
+              child.exec(`wget -P "${outputDir}" "${element}" --header="X-Radiko-Authtoken: ${authToken}";sync`, (error, stdout, stdin) => {
+                  if (error) {
+                      reject(error);
+                  } else {
+                      if(chunklisturls.length == index + 1){
+                          resolve(stdout);
+                      }
+                  }
+              });
+          });
+        });
+        await new Promise((resolve, reject) => {
+            child.exec(`cd "${outputDir}";find *.aac | sed 's/^/file /g' | sort > concatfiles.txt;ffmpeg -f concat -safe 0 -i "concatfiles.txt" "output.mp3"`, (error, stdout, stdin) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(stdout);
+                }
             });
         });
     }
