@@ -7,11 +7,14 @@ const child = require('child_process');
   console.log("トークン取得---")
   var authtoken = await radijs.get_authtoken();
   console.log(authtoken);
+
   console.log("局URL取得---")
   var bangumiuri = await radijs.get_bangumi_uri("TBS");
   console.log(bangumiuri);
+
   console.log("局一覧取得")
   console.dir(await radijs.get_station_id_list());
+
   console.log("m3u8プレイリスト取得")
   dirName = "test"
   try {
