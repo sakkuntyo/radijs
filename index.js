@@ -1,6 +1,7 @@
 // general settings
 const axios = require('axios').default;
 const fs   = require('fs');
+const child = require('child_process');
 
 // xml parser settings 
 const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
@@ -19,6 +20,7 @@ const m3u8 = require('m3u8');
     module.exports.get_authtoken = get_authtoken;
     module.exports.get_bangumi_uri = get_bangumi_uri;
     module.exports.get_station_id_list = get_station_id_list;
+    module.exports.get_m3u8_file = get_m3u8_file;
     module.exports.get_m3u8_info = get_m3u8_info;
 
     async function get_authtoken() {
@@ -80,6 +82,22 @@ const m3u8 = require('m3u8');
           parser.on('end', function() {
 	      resolve(urls);
           });
+        });
+    }
+    
+    async function get_m3u8_file(url, authToken, filePath) {
+        return new Promise(async (resolve, reject) => {
+            await new Promise((resolve, reject) => {
+              console.log(`wget "${url}" --header="X-Radiko-Authtoken: ${authToken}" -O "${filePath}";sync`)
+              child.exec(`wget "${url}" --header="X-Radiko-Authtoken: ${authToken}" -O "${filePath}";sync`,
+                (error, stdout, stdin) => {
+                if (error) {
+                  reject(error);
+                } else {
+                  resolve(stdout); 
+                }
+              });
+            });
         });
     }
 })(module);

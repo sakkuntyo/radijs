@@ -13,6 +13,16 @@ const child = require('child_process');
   console.log("局一覧取得")
   console.dir(await radijs.get_station_id_list());
   console.log("m3u8プレイリスト取得")
+  dirName = "test"
+  try {
+    fs.mkdirSync(dirName);
+  } catch(e) {
+    console.log(e)
+  }
+  var bangumim3u8filepath = `${dirName}/` + Math.random().toString(32).substring(2) + ".m3u8"
+  m3u8filePath = `${dirName}/` + Math.random().toString(32).substring(2) + ".m3u8"
+  await radijs.get_m3u8_file(bangumiuri, authtoken, m3u8filePath)
+  /* 以下を実行するとm3u8取得->m3u8取得->aac結合したoutput.mp3 の作成までできる
   var dirName = "test"
   try {
     fs.mkdirSync(dirName);
@@ -68,5 +78,6 @@ const child = require('child_process');
       }
     });
   });
-  fs.rmSync(`${dirName}`,{ recursive: true, force: true });
+  //fs.rmSync(`${dirName}`,{ recursive: true, force: true });
+  */
 })();
