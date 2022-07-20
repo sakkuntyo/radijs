@@ -25,6 +25,18 @@ const child = require('child_process');
   var bangumim3u8filepath = `${dirName}/` + Math.random().toString(32).substring(2) + ".m3u8"
   m3u8filePath = `${dirName}/` + Math.random().toString(32).substring(2) + ".m3u8"
   await radijs.get_m3u8_file(bangumiuri, authtoken, m3u8filePath)
+
+  console.log("m3u8プレイリスト情報取得")
+  chunkm3u8uri = await radijs.get_m3u8_info(m3u8filePath)
+
+  console.log("m3u8プレイリスト取得")
+  var bangumim3u8filepath = `${dirName}/` + Math.random().toString(32).substring(2) + ".m3u8"
+  chunkm3u8filePath = `${dirName}/` + Math.random().toString(32).substring(2) + ".m3u8"
+  await radijs.get_m3u8_file(chunkm3u8uri, authtoken, chunkm3u8filePath)
+ 
+  console.log("m3u8プレイリスト情報取得")
+  console.log(await radijs.get_m3u8_info(chunkm3u8filePath))
+
   /* 以下を実行するとm3u8取得->m3u8取得->aac結合したoutput.mp3 の作成までできる
   var dirName = "test"
   try {
