@@ -87,15 +87,13 @@ const m3u8 = require('m3u8');
     
     async function get_m3u8_file(url, authToken, filePath) {
         return new Promise(async (resolve, reject) => {
-            await new Promise((resolve, reject) => {
-              child.exec(`wget "${url}" --header="X-Radiko-Authtoken: ${authToken}" -O "${filePath}";sync`,
-                (error, stdout, stdin) => {
-                if (error) {
-                  reject(error);
-                } else {
-                  resolve(stdout); 
-                }
-              });
+            child.exec(`wget "${url}" --header="X-Radiko-Authtoken: ${authToken}" -O "${filePath}";sync`,
+              (error, stdout, stdin) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(stdout); 
+              }
             });
         });
     }
