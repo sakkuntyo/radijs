@@ -1,1 +1,1 @@
-ttps://github.com/uru2/radish/blob/master/radi.sh をjsで模倣予定
+ttps://github.com/uru2/radish/blob/master/radi.sh の一部をjsでパクりました。
