@@ -22,6 +22,7 @@ const m3u8 = require('m3u8');
     module.exports.get_station_id_list = get_station_id_list;
     module.exports.get_m3u8_file = get_m3u8_file;
     module.exports.get_m3u8_info = get_m3u8_info;
+    module.exports.get_m3u8 = get_m3u8;
     module.exports.download_mp3_file = download_mp3_file;
 
     async function get_authtoken() {
@@ -96,6 +97,19 @@ const m3u8 = require('m3u8');
                 resolve(stdout); 
               }
             });
+        });
+    }
+
+    async function get_m3u8(url, authToken) {
+        return new Promise((resolve, reject) => {
+            //axios.get(url, {headers: {'X-Radiko-Authtoken': authToken} ,responseType: 'application/vnd.apple.mpegurl'})
+            axios.get(url, {headers: {'X-Radiko-Authtoken': authToken}})
+                .then((response) => {
+                    resolve(response.data.match(/http.*/)[0])
+                })
+                .catch((err) => {
+                    reject(err)
+                })
         });
     }
 
