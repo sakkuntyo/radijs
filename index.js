@@ -2,6 +2,8 @@
 const axios = require('axios').default;
 const fs   = require('fs');
 const child = require('child_process');
+const convert = require('xml-js');
+
 
 // xml parser settings 
 const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');
@@ -24,7 +26,7 @@ const m3u8 = require('m3u8');
     module.exports.get_m3u8_info = get_m3u8_info;
     module.exports.get_m3u8 = get_m3u8;
     module.exports.download_mp3_file = download_mp3_file;
-
+    module.exports.get_channel_guide = get_channel_guide;
     async function get_authtoken() {
 	// Define authorize key value (from https://radiko.jp/apps/js/playerCommon.js)
         var RADIKO_AUTHKEY_VALUE = "bcd151073c03b352e1ef2fd66c32209da9ca0afa";
@@ -138,4 +140,17 @@ const m3u8 = require('m3u8');
             });
         });
     }
+
+
+    async function get_channel_guide() {
+        return new Promise((resolve, reject) => {
+            axios.get("http://radiko.jp/v3/program/now/JP13.xml")
+                .then((response) => {
+                    resolve(convert.xml2json(response.data, {compact: true, spaces: 2}))
+                })
+                .catch((err) => {
+                    reject(err)
+                })
+        });
+    };
 })(module);
